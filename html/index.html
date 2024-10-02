@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+	</head>
+	<body>
+		<header class="container">
+			<h1>Inventory</h1>
+		</header>
+		<main class="container">
+			<div x-data="{ 
+				page: 'list',
+				id: -1
+			}">
+				<nav>
+					<ul>
+						<li><strong>Manage Inventory</strong></li>
+					</ul>
+					<ul>
+						<li><a href="#" :class="page == 'list' ? 'contrast' : ''" x-on:click="page = 'list'">List</a></li>
+						<li><a href="#" :class="page == 'search' ? 'contrast' : ''" x-on:click="page = 'search'">Search</a></li>
+						<li><a href="#" :class="page == 'add' ? 'contrast' : ''" x-on:click="page = 'add'">Add</a></li>
+					</ul>
+				</nav>
+
+				<!-- search -->
+				<form x-show="page == 'search'" x-transition>
+					<fieldset class="grid">
+						<input name="ID" placeholder="ID" />
+						<input type="submit" value="Search" />
+					</fieldset>
+				</form>
+				
+				<!-- list -->
+				<table x-show="page == 'list'" x-transition>
+					<thead>
+						<tr>
+							<th scope="col">ID</th>
+							<th scope="col">Name</th>
+							<th scope="col">Description</th>
+							<th scope="col">Quantity</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">1</th>
+							<td>Spoon</td>
+							<td>Standard Spoon</td>
+							<td>3</td>
+							<td>
+								<nav>
+									<ul>
+										<li><a href="#">Update</a></li>
+										<li><a href="#">Delete</a></li>
+									</ul>
+								</nav>
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">2</th>
+							<td>Fork</td>
+							<td>Standard Fork</td>
+							<td>5</td>
+							<td>
+								<nav>
+									<ul>
+										<li><a href="#">Update</a></li>
+										<li><a href="#">Delete</a></li>
+									</ul>
+								</nav>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<!-- add -->
+				<form x-show="page == 'add'" x-transition>
+					<fieldset>
+						<input type="text" name="name" placeholder="Name" />
+						<input type="text" name="description" placeholder="Description" />
+						<input type="number" name="quantity" placeholder="Quantity" />
+						<input type="submit" value="Add" />
+					</fieldset>
+				</form>
+			</div>
+		</main>
+		<footer class="container">
+			<small>Copyright © 2024 Unicity</small>
+		</footer>
+
+		<!-- js -->
+		<script type="text/javascript">
+			function searchInventory(id) {
+				// use fetch interface
+			}
+		</script>
+	</body>
+</html>
