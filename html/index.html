@@ -5,96 +5,220 @@
 		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 	</head>
 	<body>
+		<!-- js -->
+		<script type="text/javascript">
+			api_url = 'http://127.0.0.1:5000';
+
+			async function makeRequest(method, url, data) {
+				try {
+					const response = await fetch(`${api_url}/${url}`, { method, body: JSON.stringify(data), headers: { "Content-Type": "application/json" } });
+					if (response.status === 200) {
+						return await response.json();
+					}
+					else {
+						return null;
+					}
+				} catch (error) {
+					console.log('Error', error);
+					return null;
+				}
+			}
+			
+			function getInventory() {
+				return {
+					isLoading: true,
+					inventory: [],
+
+					fetchInventory() {
+						this.isLoading = true;
+						makeRequest('GET', 'inventory')
+							.then((data) => {
+								this.isLoading = false;
+								this.inventory = data;
+								console.log(data);
+							});
+					},
+
+					searchInventory(id) {
+						this.isLoading = true;
+						makeRequest('GET', `inventory/${id}`)
+							.then((data) => {
+								if (data !== null) {
+									console.log('Got a list');
+									this.isLoading = false;
+									this.inventory = [data];
+									console.log(data);
+								}
+								else {
+									console.log('No data');
+									this.isLoading = false;
+									this.inventory = [];
+									console.log(data);
+								}
+							});
+					},
+
+					deleteItem(id) {
+						makeRequest('DELETE', `inventory/${id}`)
+							.then(() => {
+								console.log('Deleted');
+								this.fetchInventory();
+							});
+					},
+				}
+			}
+
+			function addItem() {
+				return {
+					item: {
+						id: '',
+						name: '',
+						description: '',
+						quantity: '',
+					},
+
+					addItem() {
+						makeRequest('POST', 'inventory/', this.item)
+								.then(() => {
+									console.log(this.item);
+									dispatchEvent(new CustomEvent('reset-list'));
+									this.item = {
+										id: '',
+										name: '',
+										description: '',
+										quantity: '',
+									};
+								});
+					},
+
+					prepUpdate(id) {
+						makeRequest('GET', `inventory/${id}`)
+							.then((data) => {
+								if (data !== null) {
+									console.log('Got an item');
+									this.item = data;
+									console.log(data);
+								}
+								else {
+									console.log('No data');
+									this.inventory = [];
+									console.log(data);
+								}
+							});
+					},
+				}
+			}
+
+			function updateItem() {
+			}
+		</script>
+
+		<style>
+			[x-cloak] {
+				display: none !important;
+			}
+		</style>
+
 		<header class="container">
 			<h1>Inventory</h1>
 		</header>
 		<main class="container">
 			<div x-data="{ 
-				page: 'list',
-				id: -1
+				page: 'list'
 			}">
 				<nav>
 					<ul>
 						<li><strong>Manage Inventory</strong></li>
 					</ul>
 					<ul>
-						<li><a href="#" :class="page == 'list' ? 'contrast' : ''" x-on:click="page = 'list'">List</a></li>
+						<li><a href="#" :class="page == 'list' ? 'contrast' : ''" x-on:click="$dispatch('reset-list'); page = 'list'">List</a></li>
 						<li><a href="#" :class="page == 'search' ? 'contrast' : ''" x-on:click="page = 'search'">Search</a></li>
 						<li><a href="#" :class="page == 'add' ? 'contrast' : ''" x-on:click="page = 'add'">Add</a></li>
 					</ul>
 				</nav>
 
 				<!-- search -->
-				<form x-show="page == 'search'" x-transition>
-					<fieldset class="grid">
-						<input name="ID" placeholder="ID" />
-						<input type="submit" value="Search" />
-					</fieldset>
-				</form>
+				<div 
+				 	x-cloak 
+					x-show="page == 'search'" 
+					x-data="{ search_id_val: '' }"
+					x-transition 
+				>
+					<form @submit.prevent="() => false">
+						<fieldset class="grid">
+							<input type="number" name="ID" placeholder="ID" x-model="search_id_val"/>
+							<input type="submit" value="Search" @click="$dispatch('search-id', search_id_val); page = 'list'; search_id_val = ''"/>
+						</fieldset>
+					</form>
+				</div>
 				
 				<!-- list -->
-				<table x-show="page == 'list'" x-transition>
-					<thead>
-						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">Name</th>
-							<th scope="col">Description</th>
-							<th scope="col">Quantity</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<th scope="row">1</th>
-							<td>Spoon</td>
-							<td>Standard Spoon</td>
-							<td>3</td>
-							<td>
-								<nav>
-									<ul>
-										<li><a href="#">Update</a></li>
-										<li><a href="#">Delete</a></li>
-									</ul>
-								</nav>
-							</td>
-						</tr>
-						<tr>
-							<th scope="row">2</th>
-							<td>Fork</td>
-							<td>Standard Fork</td>
-							<td>5</td>
-							<td>
-								<nav>
-									<ul>
-										<li><a href="#">Update</a></li>
-										<li><a href="#">Delete</a></li>
-									</ul>
-								</nav>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+				<div 
+					x-cloak 
+					x-show="page == 'list'" 
+					x-data="getInventory()" 
+					x-init="fetchInventory()"
+					@search-id.window="searchInventory($event.detail)"
+					@reset-list.window="fetchInventory()"
+					x-transition
+				>
+					<p x-show="isLoading">Loading...</p>
+					<table x-show="!isLoading">
+						<thead>
+							<tr>
+								<th scope="col">ID</th>
+								<th scope="col">Name</th>
+								<th scope="col">Description</th>
+								<th scope="col">Quantity</th>
+								<th scope="col">Image</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<template x-cloak x-for="item in inventory">
+								<tr>
+									<th scope="row" x-text="item.id"></th>
+									<td x-text="item.name"></td>
+									<td x-text="item.description"></td>
+									<td x-text="item.quantity"></td>
+									<td></td>
+									<td>
+										<nav>
+											<ul>
+												<li><a href="#">Add Image</a></li>
+												<li><a href="#" @click="$dispatch('update-id', item.id); page='add'">Update</a></li>
+												<li><a href="#" @click="deleteItem(item.id)">Delete</a></li>
+											</ul>
+										</nav>
+									</td>
+								</tr>
+							</template>
+						</tbody>
+					</table>
+				</div>
 				
 				<!-- add -->
-				<form x-show="page == 'add'" x-transition>
-					<fieldset>
-						<input type="text" name="name" placeholder="Name" />
-						<input type="text" name="description" placeholder="Description" />
-						<input type="number" name="quantity" placeholder="Quantity" />
-						<input type="submit" value="Add" />
-					</fieldset>
-				</form>
+				<div 
+					x-cloak 
+					x-show="page == 'add'" 
+					x-transition
+					x-data="addItem()"
+					@update-id.window="prepUpdate($event.detail)"
+				>
+					<form @submit.prevent="() => false">
+						<fieldset>
+							<input type="number" name="id" placeholder="ID" x-model="item.id" />
+							<input type="text" name="name" placeholder="Name" x-model="item.name"/>
+							<input type="text" name="description" placeholder="Description" x-model="item.description"/>
+							<input type="number" name="quantity" placeholder="Quantity" x-model="item.quantity"/>
+							<input type="submit" value="Add" @click="addItem(); page = 'list'"/>
+						</fieldset>
+					</form>
+				</div>
 			</div>
 		</main>
 		<footer class="container">
 			<small>Copyright © 2024 Unicity</small>
 		</footer>
-
-		<!-- js -->
-		<script type="text/javascript">
-			function searchInventory(id) {
-				// use fetch interface
-			}
-		</script>
 	</body>
 </html>

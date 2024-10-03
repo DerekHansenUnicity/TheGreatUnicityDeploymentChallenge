@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, make_response, request, abort
+from flask_cors import CORS
 import boto3
 
 app = Flask(__name__)
+CORS(app)
 
 def upload_to_s3(file):
     return 'http://s3path/image.png'
