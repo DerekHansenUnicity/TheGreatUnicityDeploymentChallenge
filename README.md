@@ -34,6 +34,8 @@ The bucket will need to allow uploads and allow the uploaded images to be access
 
 Update the app Dockerfile and docker compose file with the needed parameters to allow the python app to upload images and use the stored images.
 
+There is a sample in `terraform/example/` of creating a s3 bucket, but it doesn't have all it needs for upload and public access.
+
 
 ## Step 3: Technical Review and Interview
 
