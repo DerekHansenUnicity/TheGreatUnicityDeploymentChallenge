@@ -11,7 +11,7 @@ endpoint_url = "http://host.docker.internal:4566"
 
 AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY') or 'fake-aws-access-key'
 AWS_SECRET_ACCESS_KEY = environ.get('AWS_SECRET_ACCESS_KEY') or 'fake-aws-secret-access-key'
-BUCKET_NAME = environ.get('S3_BUCKET_NAME') or 'my-bucket'
+BUCKET_NAME = environ.get('S3_BUCKET_NAME') or 'fake-bucket'
 
 s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, endpoint_url=endpoint_url)
 

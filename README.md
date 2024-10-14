@@ -32,16 +32,18 @@ Create a bucket to store the uploaded images using terraform.
 
 The bucket will need to allow uploads and allow the uploaded images to be access via public url.
 
-Update the app Dockerfile and docker compose file with the needed parameters to allow the python app to upload images and use the stored images.
+Update the app Dockerfile and docker compose file with the needed environment variables to allow the python app to upload images and use the stored images.
 
-There is a sample in `terraform/example/` of creating a s3 bucket, but it doesn't have all it needs for upload and public access.
+There is a sample in `terraform/example/` of creating a s3 bucket, but it doesn't have all it needs for upload and public access. It is primarily there as an example of how to use terraform with localstack. See the `providers.tf` file.
+
+The goal here is to have you create a terraform module to create a s3 bucket with the roles/policies/permissions that would be needed for production.
 
 
 ## Step 3: Technical Review and Interview
 
 Schedule an interview with your Unicity contact. [Booking Link](https://koalendar.com/e/technical-challenge-review)
 
-You will be asked to walk us through your solution to Step 2. 
+You will be asked to walk us through your solution to Step 2. You don't need to create a PR 
 
 Then we will ask you to do an additional step live with us. It should be a somewhat simplier version of the step 2 task.
 
