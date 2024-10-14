@@ -1,3 +1,4 @@
+from os import environ
 from flask import Flask, jsonify, make_response, request, abort
 from flask_cors import CORS
 import boto3
@@ -5,8 +6,22 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
+endpoint_url = "http://s3.localhost.localstack.cloud:4566"
+# endpoint_url = "http://host.docker.internal:4566"
+
+AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY') or 'fake-aws-access-key'
+AWS_SECRET_ACCESS_KEY = environ.get('AWS_SECRET_ACCESS_KEY') or 'fake-aws-secret-access-key'
+BUCKET_NAME = environ.get('S3_BUCKET_NAME') or 'my-bucket'
+
+s3 = boto3.client('s3', aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_ACCESS_KEY, endpoint_url=endpoint_url)
+
 def upload_to_s3(file):
-    return 'http://s3path/image.png'
+    try:
+        response = s3.upload_fileobj(file, Bucket=BUCKET_NAME, Key=file.filename)
+        return 'http://s3.localhost.localstack.cloud:4566/%s/%s'%(BUCKET_NAME, file.filename)
+    except Exception as e:
+        print(str(e))
+        return ''
 
 inventory = [
     {
@@ -78,14 +93,16 @@ def post_item_image(item_id):
             inventory.remove(item)
 
     if found_item is not None:
-        image_url = ''
-        if len(request.files) > 0:
-            file = request.files["image_file"]
-            image_url = upload_to_s3(file)
-        found_item['image_url'] = image_url
+        file = request.files.get('image_file')
+        if file:
+            found_item['image_url'] = upload_to_s3(file)
+        else:
+            inventory.append(found_item)
+            return make_response(jsonify({'error': 'No image', 'message': 'No Image File Found'}), 400)
         inventory.append(found_item)
-        return jsonify({'status': 'success'})
+        return jsonify(found_item)
     else:
+        inventory.append(found_item)
         return make_response(jsonify({'error': 'Not Found', 'message': 'Item Not Found'}), 404)
 
 @app.route('/inventory/<int:item_id>', methods=['GET'])

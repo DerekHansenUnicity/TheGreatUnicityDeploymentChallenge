@@ -23,6 +23,29 @@
 					return null;
 				}
 			}
+
+			async function postImage(id, image_file, filename) {
+				var data = new FormData();
+                let reader = new FileReader();
+                reader.onloadend = function() {
+					const filename = reader.result.name;
+					const file = reader.result;
+                    data.append("image_file", document.querySelector("input[type=file]").files[0], filename);
+					console.log(data.entries().next().value);
+					try {
+						const response = fetch(
+							`${api_url}/inventory/${id}/image`,
+							{ 
+								method: 'POST', 
+								body: data 
+							}
+						);
+					} catch (error) {
+						console.log('Error', error);
+					}
+                };
+                reader.readAsDataURL(image_file);
+			}
 			
 			function getInventory() {
 				return {
@@ -109,7 +132,24 @@
 				}
 			}
 
-			function updateItem() {
+			function uploadItemImage() {
+				return {
+					id: '',
+					image: null,
+
+					uploadImage() {
+						const file = document.querySelector("input[type=file]").files[0];
+						const filename = document.querySelector("input[type=file]").files[0].name;
+						postImage(this.id, file, filename)
+							.then(() => {
+								console.log(this.id, '->', file);
+							});
+					},
+
+					prepUpload(id) {
+						this.id = id;
+					}
+				}
 			}
 		</script>
 
@@ -181,11 +221,11 @@
 									<td x-text="item.name"></td>
 									<td x-text="item.description"></td>
 									<td x-text="item.quantity"></td>
-									<td></td>
+									<td><img :src="item.image_url" alt="No Image" height="100" width="100"></td>
 									<td>
 										<nav>
 											<ul>
-												<li><a href="#">Add Image</a></li>
+												<li><a href="#" @click="$dispatch('upload-id', item.id); page='upload'">Add Image</a></li>
 												<li><a href="#" @click="$dispatch('update-id', item.id); page='add'">Update</a></li>
 												<li><a href="#" @click="deleteItem(item.id)">Delete</a></li>
 											</ul>
@@ -212,6 +252,23 @@
 							<input type="text" name="description" placeholder="Description" x-model="item.description"/>
 							<input type="number" name="quantity" placeholder="Quantity" x-model="item.quantity"/>
 							<input type="submit" value="Add" @click="addItem(); page = 'list'"/>
+						</fieldset>
+					</form>
+				</div>
+
+				<!-- Upload Image -->
+				<div
+					x-cloak
+					x-show="page == 'upload'"
+					x-transition
+					x-data="uploadItemImage()"
+					@upload-id.window="prepUpload($event.detail)"
+				>
+					<form @submit.prevent="() => false" method="POST">
+						<fieldset>
+							<label>Item ID<input type="text" x-model="id" readonly></label>
+							<input type="file" name="image_file" accept="image/*" x-model="image"/>
+							<input type="submit" value="Upload" @click="uploadImage(); page = 'list'"/>
 						</fieldset>
 					</form>
 				</div>
