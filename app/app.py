@@ -6,8 +6,8 @@ import boto3
 app = Flask(__name__)
 CORS(app)
 
-endpoint_url = "http://s3.localhost.localstack.cloud:4566"
-# endpoint_url = "http://host.docker.internal:4566"
+# endpoint_url = "http://s3.localhost.localstack.cloud:4566"
+endpoint_url = "http://host.docker.internal:4566"
 
 AWS_ACCESS_KEY = environ.get('AWS_ACCESS_KEY') or 'fake-aws-access-key'
 AWS_SECRET_ACCESS_KEY = environ.get('AWS_SECRET_ACCESS_KEY') or 'fake-aws-secret-access-key'

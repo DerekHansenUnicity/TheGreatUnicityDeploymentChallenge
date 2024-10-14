@@ -39,10 +39,10 @@ There is a sample in `terraform/example/` of creating a s3 bucket, but it doesn'
 
 ## Step 3: Technical Review and Interview
 
-Schedule an interview with your Unicity contact.
+Schedule an interview with your Unicity contact. [Booking Link](https://koalendar.com/e/technical-challenge-review)
 
 You will be asked to walk us through your solution to Step 2. 
 
-Then we will ask you to do an additional step live with us. It should be a somewhat simplier version of the problem.
+Then we will ask you to do an additional step live with us. It should be a somewhat simplier version of the step 2 task.
 
 Any additional interview time will be used to deep dive into your technical background and to discuss any questions you have.
