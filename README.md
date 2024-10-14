@@ -43,7 +43,7 @@ The goal here is to have you create a terraform module to create a s3 bucket wit
 
 Schedule an interview with your Unicity contact. [Booking Link](https://koalendar.com/e/technical-challenge-review)
 
-You will be asked to walk us through your solution to Step 2. You don't need to create a PR 
+You will be asked to walk us through your solution to Step 2. You don't need to create a PR, but be prepared to walk us through your code. 
 
 Then we will ask you to do an additional step live with us. It should be a somewhat simplier version of the step 2 task.
 
