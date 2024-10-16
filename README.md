@@ -36,8 +36,7 @@ Update the app Dockerfile and docker compose file with the needed environment va
 
 There is a sample in `terraform/example/` of creating a s3 bucket, but it doesn't have all it needs for upload and public access. It is primarily there as an example of how to use terraform with localstack. See the `providers.tf` file.
 
-The goal here is to have you create a terraform module to create a s3 bucket with the roles/policies/permissions that would be needed for production.
-
+The goal here is to have you create a terraform module to create a s3 bucket with the roles/policies/permissions that would be needed for production. If you are able to put everything together you will be able to actually run the docker stack and have it upload images to your s3 bucket.
 
 ## Step 3: Technical Review and Interview
 
